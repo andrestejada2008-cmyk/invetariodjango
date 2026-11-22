@@ -1,0 +1,179 @@
+{% load static %}
+{% include 'Inc/header.html' %}
+
+<div class="container">
+    <h1>Listado de Productos</h1>
+    <a href="/Producto/insertar">
+        <button type="submit" class="btn btn-success">registrar</button>
+    </a>
+    <br><br>
+    <div class="card-group">
+        <div class="row row-cols-md-1 row-cols-md-2 row-cols-md-3 g-4">
+            {% for t in mostrar %}
+                <div class="col">
+                    <div class="card" style="width: 18rem;">
+                        <img src="{% static 'Img/' %}{{t.foto}}" class="card-img-top" alt="...">
+                        <div class="card-body">
+                            <h3>{{t.nombre}}</h3>
+                            <p class="card-text">{{t.descripcion}}</p>
+                            <p class="card-text">{{t.precio}}</p>
+                            <p class="card-text">{{t.cantidad}}</p>
+                            <p class="card-text">{{t.fecha}}</p>
+                            <div class="d-flex justify-content-center">
+                                <!--eliminar-->
+                                <a href="/Producto/editar/{{ t.id }}"><i class="fa fa-pencil fa-4x text-info me-4"></i></a>
+                                <!--detalle api modal-->
+                                <a href="#" onclick="Consuapi('{{t.id}}')"><i class="fa fa-info-circle fa-4x text-success me-4"></i></a>
+                                <!--borrar-->
+                                <a href="#" onclick="borrar('{{t.id}}')"><i class="fa fa-trash fa-4x text-danger me-4"></i></a>
+                                <form action="/Producto/eliminar" method="POST" id="formu{{t.id}}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="idprover" id="idprover" value="{{t.id}}">
+                                    <input type="hidden" name="foto" id="idprover" value="{{t.foto}}">
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- El archivo mostrarpro.html -->
+                        <!-- <a href="/Producto/editar/{{ t.id }}"
+                        <button type="submit" class="btn btn-success">Editar</button></a>
+                        <button type="submit" class="btn btn-danger" onclick="borrar('{{t.0}}')">Eliminar</button>
+                        <button class="btn btn-danger" onclick="borrar('{{t.id}}')">Eliminar</button>-->
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    <br>
+    <!-- Button trigger modal
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+    Launch demo modal
+    </button> -->
+    <!-- Modal -->
+    <div class="modal fade modal-lg" id="modaproducto" tabindex="-1" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="titleproducto"></h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center display-6">
+                        <img src="" width="100%" height="100%" id="imgproducto">
+                        <div id="descri"></div>
+                        <p id="cantidad"></p>
+                        <p id="precio"></p>
+                        <p id="fecha"></p>
+                        <p id="nombreprove"></p>
+                    </div>
+                </div>
+
+                <!-- El archivo mostrarpro.html -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="Imprimirpdf()">imprimir pdf</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br><br>
+
+    <!-- <form action="/Producto/api" method="POST">
+    {% csrf_token %}
+    <input type="number" name="idpro" id="idpro" >
+    </form>
+    <button type="button" onclick="Consuapi()" class="btn btn-primary">probar api</button>
+    -->
+    <script src="{% static 'Js/jspdf.umd.min.js' %}"></script>
+    <script>
+    function borrar(id) {
+        Swal.fire({
+            title: "Esta seguro que queire borrar?",
+            showDenyButton: true,
+            showCancelButton: true,
+            confirmButtonText: "Save",
+            denyButtonText: `Don't save`
+        }).then((result) => {
+            /* Read more about isConfirmed, isDenied below */
+            if (result.isConfirmed) {
+                document.getElementById('formu' + id).submit();
+                Swal.fire("Saved!", "", "success");
+            } else if (result.isDenied) {
+                Swal.fire("Changes are not saved", "", "info");
+            }
+        });
+    }
+
+    // El archivo mostrarpro.html
+    function Consuapi(idpro) {
+        const tokenpro = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        let idpros = idpro
+        //let idpros=document.getElementById('idpro').value pruebas
+        //donde quiero que vaya y traerme información
+        //console.log(tokenproducto) pruebas
+        //console.log(idpro) pruebas
+        fetch('/Producto/api', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': tokenpro//viene has del token
+            },
+            body: JSON.stringify({
+                idpro: idpros//consulta el id
+            })
+        })
+        .then(Response => Response.json())
+        .then(data => {
+            //console.log("Llego la informacion")
+            if (data.length !== 0) {
+                console.log(data)
+                document.getElementById('titleproducto').innerHTML = data[0].fields.nombre
+                document.getElementById('imgproducto').src = "{% static 'Img/productoss/' %}"
+                    + data[0].fields.foto;
+                document.getElementById('titleproducto').innerHTML = data[0].fields.nombre
+                document.getElementById('descri').innerHTML = "<b>Descripcion: </b>" + data[0].fields.descripcion
+                document.getElementById('cantidad').innerHTML = "<b>Cantidad: </b>" + data[0].fields.cantidad
+                document.getElementById('precio').innerHTML = "<b>Precio: </b>" + data[0].fields.precio
+                document.getElementById('fecha').innerHTML = "<b>Fecha: </b>" + data[0].fields.fecha
+                document.getElementById('nombreprove').innerHTML = "<b>Proveedor: </b>" + data[0].fields.nombreprover
+                $('#modaproducto').modal('show');
+            }
+            else {
+                //console.log("Llego la informacion")
+                //console.log(data.lenght)
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Something went wrong!",
+                    footer: '<a href="#">Why do I have this issue?</a>'
+                });
+
+                // El archivo mostrarpro.html
+            }
+        })
+        .catch((error) => {
+            console.log("hubo error")
+            console.log(error)
+        });
+    }
+
+    function Imprimirpdf() {
+        //import { jsPDF } from "jspdf" ;
+        console.log("pruebas");
+        //let nompro=document.getElementById('titleproducto').innerText;
+        let nompro = document.getElementById('titleproducto').innerHTML;
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF('p', 'mm', 'a3');
+        //let img= new Image()
+        //imag.src=document.getElementById('{% static "Img/productoss/" %}').src;
+        //doc.addImage(image, 'PNG')
+        doc.text("Hello world!", 10, 10);
+        doc.text("Nombre producto: " + nompro, 10, 20);
+        doc.save("detalleproducto.pdf")
+    }
+    </script>
+</div>
+
+</div>
+{% include 'Inc/footer.html' %}

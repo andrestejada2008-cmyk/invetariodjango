@@ -1,0 +1,97 @@
+{% load static %}
+{% include 'Inc/header.html' %}
+
+<div class="container">
+    <h1 class="text-center">Formulario Insertar Productos</h1>
+    <div class="container text-center">
+        <form action="" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+            {% csrf_token %}
+            <div class="row align-items-center">
+                <div class="col-6">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="nombre" placeholder="wilson"
+                               name="nombre" value="{{nombre}}" required>
+                        <label for="nombre">Nombre:</label>
+                        <div class="valid-feedback">
+                            Todo ok
+                        </div>
+                        <div class="invalid-feedback">
+                            Escriba el nombre
+                        </div>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="number" class="form-control" id="precio" placeholder="Precio"
+                               name="precio" value="{{precio}}" required>
+                        <label for="precio">Precio:</label>
+                    </div>
+                    <div class="form-floating">
+                        <input type="date" class="form-control" id="fecha" placeholder="Fecha"
+                               name="fecha" value="{{fecha}}" required>
+                        <label for="fecha">Fecha:</label>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-floating mb-3">
+                        <input type="file" class="form-control" id="foto" placeholder="Foto"
+                               name="foto" accept="image/*">
+                        <label for="foto">Foto:</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="number" class="form-control" id="cantidad" placeholder="Cantidad"
+                               name="cantidad" value="{{cantidad}}" required>
+                        <label for="cantidad">Cantidad:</label>
+                    </div>
+
+                    <!-- El archivo insertarpro.html -->
+                    <div class="form-floating">
+                        <select class="form-select" aria-label="Default select example" name="prover">
+                            <option selected>Seleccione opción</option>
+                            {% for d in provers %}
+                                <option value="{{d.id}}">{{ d.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                        <label for="prover">Proveedores:</label>
+                    </div>
+                </div>
+            </div>
+            <br>
+            <div class="col-12">
+                <div class="form-floating">
+                    <input type="text" class="form-control" id="descri" placeholder="Descripción"
+                           name="descri" value="{{descripcion}}" required>
+                    <label for="descri">Descripción:</label>
+                </div>
+            </div>
+            <h5>{{ mensa }}</h5>
+            <br>
+            <div class="col-12">
+                <div class="form-floating mb-3">
+                    <button type="submit" class="btn btn-primary">registrar</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+(() => {
+    'use strict'
+
+    // El archivo insertarpro.html
+    // Fetch all the forms we want to apply custom Bootstrap validation styles to
+    const forms = document.querySelectorAll('.needs-validation')
+    // Loop over them and prevent submission
+    Array.from(forms).forEach(form => {
+        form.addEventListener('submit', event => {
+            if (!form.checkValidity()) {
+                event.preventDefault()
+                event.stopPropagation()
+            }
+
+            form.classList.add('was-validated')
+        }, false)
+    })
+})()
+</script>
+
+{% include 'Inc/footer.html' %}

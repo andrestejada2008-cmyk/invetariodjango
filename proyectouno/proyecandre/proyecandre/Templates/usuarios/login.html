@@ -1,0 +1,69 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="{% static 'Css/menu.css' %}">
+
+	<title>Proyecto Dos</title>
+</head>
+
+<h2>Bienvenidos al Proyecto Python</h2>
+<div class="container" id="container">
+	<div class="form-container sign-up-container">
+		<form action="/User/registro" method="POST">
+			<h1>Crear Cuenta</h1>
+			{% csrf_token %}
+			<span>o utiliza tu correo electrónico para registrarte</span>
+			<input type="text" placeholder="Usuario" name="user" id="user" />
+			<input type="text" placeholder="Nombre" name="nombre" id="nombre" />
+			<input type="text" placeholder="Apellido" name="apellido" id="apellido" />
+			<input type="email" placeholder="Email" name="email" id="email" />
+			<input type="password" placeholder="Password" name="pass" id="pass" />
+			<button type="submit">Crear Usuario</button>
+		</form>
+	</div>
+	<div class="form-container sign-in-container">
+		<form action="/User/login" method="POST">
+			{% csrf_token %}
+			<h1>Iniciar sesión</h1>
+			<span> Super que vas a ingresar</span>
+			<input type="text" placeholder="Usuario" name="usu" id="usu" />
+			<input type="password" placeholder="Password" name="pass" id="pass" />
+			<span style="color: red;">
+				{{ mensajeerror }}
+			</span>
+			<button type="submit">Iniciar sesión</button>
+		</form>
+	</div>
+	<div class="overlay-container">
+		<div class="overlay">
+			<div class="overlay-panel overlay-left">
+				<h1>¡Bienvenido de nuevo!.</h1>
+				<p>Para mantenerse conectado con nosotros, inicie sesión con su información personal</p>
+				<button class="ghost" id="signIn">Iniciar sesión</button>
+			</div>
+			<div class="overlay-panel overlay-right">
+				<h1>Hola amigo</h1>
+				<p>Introduce tus datos personales y comienza tu viaje con nosotros.</p>
+				<button class="ghost" id="signUp">Inscribirse</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<footer>
+	<p>
+		wilson lopez
+	</p>
+</footer>
+
+
+<script src="{% static 'Js/menu.js' %}"></script>
+
+</body>
+
+</html>
